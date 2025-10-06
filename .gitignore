@@ -1,0 +1,7 @@
+__pycache__/
+build/
+kovytzy.rep/
+tools/
+kovytzy.gpr
+kovytzy.lock
+kovytzy.lock~
