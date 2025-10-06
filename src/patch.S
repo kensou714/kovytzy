@@ -10,8 +10,8 @@ XXEXPORT_START(dumpy)
 	
 .file "src/patch/test_patch.S"
 .line 1
-	XXPATCH16(0x220)
-		.asciz "HERO_HACK"
+	XXPATCH16(0x231)
+		.asciz "HAI"
 .file __FILE__
 .line __LINE__
 XXEXPORT_END(dumpy)
