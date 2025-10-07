@@ -12,7 +12,7 @@
 #define XXPATCH16(_addr_) XXPATCH(_addr_,16)
 
 
-#define XXJUMP32(_to_) .extern _to_;  jsr.l (_to_);
+#define XXJUMP32(_to_) .extern _to_;  jmp.l (_to_);
 #define XXALIGN16(_from_) 
 #define XX_JUMP16(_to_) XXJUMP32(_to_)
 #define XXJUMP16(_from_,_to_) XXALIGN16(_from_);XX_JUMP16(_to_)

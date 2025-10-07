@@ -17,7 +17,7 @@ ENDFOREACH(src)
 #this would be text->.h
 add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/patch.S
                     DEPENDS ${p_source_files}
-                    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/gen_patch.py ${ROM_OFFSET} ${CMAKE_CURRENT_SOURCE_DIR}/src/patch.S ${p_source_files}
+                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gen_patch.py ${ROM_OFFSET} ${CMAKE_CURRENT_SOURCE_DIR}/src/patch.S ${p_source_files}
 )
 	set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/patch.S)
 add_custom_target( generate_patch DEPENDS ${p_source_files} )

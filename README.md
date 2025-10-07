@@ -1,89 +1,78 @@
-# Kovytzy Build & Tooling Guide
+## 街机游戏 三国战纪1一统中原Hack框架
+#### 在线试玩
+- 试玩地址 https://hackrom.gitee.io/emu/kovytzyhack/
 
-## Overview
-This repository builds and patches the `ytzy_v201cn` ROM family:
+![游戏标题画面](https://gitee.com/hackrom/kovytzyhack/raw/master/images/title.png "游戏标题画面")
 
-- `gen_patch.py` bundles the assembly patches in `src/patch/` into `src/patch.S`.
-- `app_patch.py` takes the linked `game` ELF, extracts the `.rom`/`.ram` segments via `objcopy`, and rewrites the original ROM to produce `ytzy_v201cn_h.rom`.
-- `tools/bridge_mcp_ghidra.py` exposes a Model Context Protocol (MCP) service that converts Ghidra REST endpoints into remotely callable tools.
+#### 代码贡献者名单
+- [XingXing](https://gitee.com/happyasr)
+- [kensou](https://gitee.com/hackrom)
+- 0DAY-S
+- [xinlinhack](https://gitee.com/xinlinhack)
 
-## Prerequisites
-1. **m68k-elf toolchain**: install a toolchain that provides `m68k-elf-objcopy.exe`, `m68k-elf-gcc.exe`, etc. Ensure the binary directory (e.g. `D:\m68k-elf\bin`) is on `PATH`, or configure `TC_PATH` during setup.
-2. **CMake**: version 3.12 or newer. On Windows invoke it via `D:/CMake/bin/cmake.exe`.
-3. **Python 3**: all scripts target Python 3. Make sure the `python` command resolves to a 3.x interpreter.
-4. **Python packages (optional, MCP bridge only)**: `bridge_mcp_ghidra.py` depends on `requests` and `mcp`. Install them with `pip install requests mcp`.
-5. **Ghidra (optional)**: to use the MCP bridge, unpack `tools/GhidraMCP-1-4.zip` and load the provided server script into Ghidra as described inside the archive.
+#### 编译环境
+- python2.7 https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
+- cmake https://cmake.org/download/
+- Prebuilt GNU toolchain for m68k-elf http://sysprogs.com/files/gnutoolchains/m68k-elf/m68k-elf-gcc4.8.0.exe
+- 以上工具打包下载 https://pan.baidu.com/s/1tjFW5EHMZfxa0xKfC7cLEg 提取码：m73h
 
-## Build Workflow
-### Configure once
-```bash
-mkdir build
-cd build
-"D:/CMake/bin/cmake.exe" .. -DCMAKE_TOOLCHAIN_FILE=../pgm.cmake -G "Unix Makefiles"
-```
-> To override the toolchain path, set `TC_PATH="D:/m68k-elf/bin/"` before running CMake, or edit `pgm.cmake` accordingly.
+#### 68K分析工具推荐
+- Ghidra https://github.com/NationalSecurityAgency/ghidra/releases
 
-### Compile and generate ROM
-```bash
-cmake --build . -- -j8
-```
-You can also call `make -j8` directly.
+#### 修改讨论
+- 论坛 https://www.ppxclub.com/
 
-Artifacts produced:
-- `build/game`: the final executable image.
-- `build/game.map`: link map produced by the linker.
-- `ytzy_v201cn_h.rom`: patched ROM written to the repository root.
+#### 在线联机平台支持
+- 畅玩空间 https://www.wo1wan.com/
+- 游聚平台 https://www.gotvg.com/
 
-To regenerate only the patch assembly file:
-```bash
-cmake --build . --target generate_patch
-```
+#### Hack资料
+- [ghidra的使用教程](https://gitee.com/hackrom/kovytzyhack/blob/master/docs/ghidra%E7%9A%84%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+- [编译环境搭建教程](https://gitee.com/hackrom/kovytzyhack/blob/master/docs/kovytzyhack%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B.md)
 
-`build.bat` replicates the same workflow and additionally copies the ROM to a MAME directory; adjust paths in that batch file if you rely on it.
+#### 编译步骤
+1. 下载编译环境的3个安装包，并安装好。
+1. 从gitee下载编译文件 https://gitee.com/hackrom/kovytzyhack
+1. 运行编译文件里的build.bat进行自动编译。
+1. 编译完成会自动在根目录生成一个ytzy_v201cn_h.rom文件。
+1. 替换原版游戏的PROM。
+1. 运行游戏模拟器进入游戏测试。
 
-## Script reference
-### `gen_patch.py`
-```
-python gen_patch.py <ROM_OFFSET> <OUTPUT_PATCH_S> <PATCH_SOURCE...>
-```
-Used automatically by CMake to merge all `.S` files under `src/patch/` into `src/patch.S` sorted by patch address.
+#### 更新日志
 
-### `app_patch.py`
-```
-python app_patch.py <CROSS-PREFIX> <ELF> <MAP> <ORI_BIN> <OUTPUT_BIN>
-```
-Invoked after the `game` target links. Runs `<CROSS-PREFIX>objcopy.exe` to extract the ROM/RAM sections from the ELF, splices them into the original ROM, and writes the patched image to disk.
+- 优化多层血条代码，支持自定义多层颜色和数值显示
 
-## Ghidra MCP bridge
-`tools/bridge_mcp_ghidra.py` turns Ghidra REST endpoints into MCP tools so that MCP-capable clients can inspect or edit the active project.
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/031601.png "相关截图")
 
-### Launch steps
-1. Install the Ghidra server script from `tools/GhidraMCP-1-4.zip` and start the REST service (default URL `http://127.0.0.1:8080/`).
-2. Open the target program in Ghidra (for example `ytzy_v201cn_d.rom`) and ensure the server reports it is running.
-3. Start the MCP bridge from the repository root:
-   ```bash
-   python tools/bridge_mcp_ghidra.py --ghidra-server http://127.0.0.1:8080/
-   ```
-   - `--transport stdio` (default) serves MCP over stdin/stdout.
-   - `--transport sse --mcp-host 0.0.0.0 --mcp-port 8081` exposes an SSE endpoint instead.
+##### 2020-03-15
+- 增加多层血条HOOK
 
-### Exposed tools
-The script registers many MCP tools, including:
-- `list_methods(offset=0, limit=100)` - list functions with pagination.
-- `decompile_function(name)` - fetch decompiled C for the specified function.
-- `rename_function(old_name, new_name)` / `rename_data(address, new_name)` - rename symbols.
-- `list_segments`, `list_strings(filter=None)`, `get_xrefs_to(address)` - inspect memory segments, strings, and cross-references.
-- `set_function_prototype(function_address, prototype)` and similar helpers for adjusting prototypes and variable types.
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/031501.png "相关截图")
 
-Import the script in Python (`from tools.bridge_mcp_ghidra import list_methods`) or connect via an MCP-aware client to call these helpers directly.
+##### 2020-03-14
+- 更新去暗桩补丁。
+- MOD了关卡1的更多场景
+- 将ARM的门表格外置到68K程序里。
 
-## Troubleshooting
-- **`m68k-elf-objcopy.exe` not found**: double-check the toolchain path on `PATH`, or set `TC_PATH` in `pgm.cmake`.
-- **`python` resolves to Python 2**: ensure `python --version` outputs 3.x or use an explicit virtual environment.
-- **Cannot reach Ghidra REST server**: confirm the Ghidra script is running and that the MCP bridge points to the same host/port.
+##### 2020-03-11
+- 增加"心林"的kovytzyhack编译环境搭建教程。
 
-## Useful references
-- `build.bat` - example batch script that builds and copies the ROM into a MAME install.
-- `tools/GhidraMCP-1-4.zip` - Ghidra-side MCP plugin archive.
+##### 2020-03-10
+- 增加"心林"的Ghidra使用教程pdf。
+- 增加在线试玩入口。
 
-Keep the toolchain and Python dependencies aligned with these requirements and the project should build and integrate with Ghidra smoothly.
+##### 2020-03-09
+- 更新去暗桩补丁到104条。
+- MOD了关卡1场景2的刷兵和掉落配置。
+- 新增部分函数名定义。
+
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/030901.png "相关截图")
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/030902.png "相关截图")
+
+##### 2020-03-06
+- 修改了部分文件和文件夹的命名和分配。
+- MOD了调试菜单界面，投币开始界面，版权页面，模式选择界面，选人界面（未完成）。
+
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/030601.png "相关截图")
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/030602.png "相关截图")
+![相关截图](https://gitee.com/hackrom/kovytzyhack/raw/master/images/030603.png "相关截图")
