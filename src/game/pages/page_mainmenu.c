@@ -17,6 +17,7 @@
 #include "../game_type.h"
 #include "../game_func.h"
 #include "../game_api.h"
+#include "test_menu/test_menu.h"
 
 /* ============================================================================
  * 数据结构和常量定义
@@ -75,47 +76,28 @@ static const char* const menu_strings[MENU_ITEM_COUNT] = {
 typedef void (*MenuFuncPtr)(void);
 
 /**
- * @brief TEST MUSIC 占位函数
- *
- * 注意：ROM中0x001a1272不是函数入口，而是数据表
- * 可能需要特殊的解释器来执行，暂时使用占位函数
- */
-static void test_music_placeholder(void)
-{
-    /* 暂时什么都不做，避免跳转到数据地址崩溃 */
-    Print_00152cbc(0, 10, 10, 1, 0, "TEST MUSIC - Not Implemented");
-    Print_00152cbc(0, 10, 11, 0, 0, "Press START to return");
-
-    /* 等待START键返回 */
-    while (ChkKeyPress_0014f962(KEY_P1_START) == 0) {
-        /* 等待 */
-    }
-}
-
-/**
  * @brief 菜单测试函数指针数组
- * 原ROM地址: 0x00339caa
  *
- * 注意：这些函数目前指向ROM原始地址，未来可以逐个还原
- * 0x001a1272 不是函数，已替换为占位函数
+ * 所有测试功能都在 test_menu/ 目录下实现
+ * 可以逐个还原ROM功能，或添加自定义功能
  */
 static const MenuFuncPtr menu_functions[MENU_ITEM_COUNT] = {
-    test_music_placeholder,   /* [ 0] TEST MUSIC - 特殊：ROM中是数据，非函数 */
-    (MenuFuncPtr)0x001a1276,  /* [ 1] TEST VOICE       */
-    (MenuFuncPtr)0x001a1a50,  /* [ 2] TEST ROLE        */
-    (MenuFuncPtr)0x001a24a2,  /* [ 3] TEST RORO        */
-    (MenuFuncPtr)0x001a2f68,  /* [ 4] TEST OFFICER     */
-    (MenuFuncPtr)0x001a3a2e,  /* [ 5] TEST SYSOBJ      */
-    (MenuFuncPtr)0x001a17da,  /* [ 6] TEST FOOD        */
-    (MenuFuncPtr)0x001a1944,  /* [ 7] TEST WEAPON      */
-    (MenuFuncPtr)0x001a3d30,  /* [ 8] CLEAR SYSTEM RAM */
-    (MenuFuncPtr)0x001a3cc4,  /* [ 9] TEST SIGNATURE   */
-    (MenuFuncPtr)0x001a3f30,  /* [10] TEST DIALOG      */
-    (MenuFuncPtr)0x001a418e,  /* [11] TEST STORY       */
-    (MenuFuncPtr)0x001a4756,  /* [12] TEST OVER        */
-    (MenuFuncPtr)0x001a47a0,  /* [13] TEST OVER1       */
-    (MenuFuncPtr)0x001a47f0,  /* [14] TEST RANK        */
-    (MenuFuncPtr)0x001a488c,  /* [15] TEST ASIC27      */
+    test_music,       /* [ 0] TEST MUSIC       - test_menu/test_music.c */
+    test_voice,       /* [ 1] TEST VOICE       - test_menu/test_stubs.c */
+    test_role,        /* [ 2] TEST ROLE        - test_menu/test_stubs.c */
+    test_roro,        /* [ 3] TEST RORO        - test_menu/test_stubs.c */
+    test_officer,     /* [ 4] TEST OFFICER     - test_menu/test_stubs.c */
+    test_sysobj,      /* [ 5] TEST SYSOBJ      - test_menu/test_stubs.c */
+    test_food,        /* [ 6] TEST FOOD        - test_menu/test_stubs.c */
+    test_weapon,      /* [ 7] TEST WEAPON      - test_menu/test_stubs.c */
+    test_clear_ram,   /* [ 8] CLEAR SYSTEM RAM - test_menu/test_stubs.c */
+    test_signature,   /* [ 9] TEST SIGNATURE   - test_menu/test_stubs.c */
+    test_dialog,      /* [10] TEST DIALOG      - test_menu/test_stubs.c */
+    test_story,       /* [11] TEST STORY       - test_menu/test_stubs.c */
+    test_over,        /* [12] TEST OVER        - test_menu/test_stubs.c */
+    test_over1,       /* [13] TEST OVER1       - test_menu/test_stubs.c */
+    test_rank,        /* [14] TEST RANK        - test_menu/test_stubs.c */
+    test_asic27,      /* [15] TEST ASIC27      - test_menu/test_stubs.c */
 };
 
 /**
